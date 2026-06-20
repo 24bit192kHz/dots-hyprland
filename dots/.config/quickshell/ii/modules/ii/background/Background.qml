@@ -17,6 +17,7 @@ import Quickshell.Hyprland
 import qs.modules.ii.background.widgets
 import qs.modules.ii.background.widgets.clock
 import qs.modules.ii.background.widgets.weather
+import "earth" as EarthApp
 
 Variants {
     id: root
@@ -127,19 +128,15 @@ Variants {
         Item {
             anchors.fill: parent
 
-            // Wallpaper
-            StyledImage {
+            // Dynamic Earth Wallpaper
+            EarthApp.EarthWrapper {
                 id: wallpaper
                 visible: opacity > 0 && !blurLoader.active
-                opacity: (status === Image.Ready && !bgRoot.wallpaperIsVideo) ? 1 : 0
-                cache: false
-                smooth: false
+                opacity: (!bgRoot.wallpaperIsVideo) ? 1 : 0
 
                 property int workspaceIndex: (bgRoot.monitor.activeWorkspace?.id ?? 1) - 1
                 property real middleFraction: 0.5
                 property real fraction: {
-                    // 0 - start of the picture
-                    // 1 - end of the picture
                     if (bgRoot.totalWorkspaces <= 1) {
                         return middleFraction;
                     }
@@ -167,21 +164,17 @@ Variants {
 
                 x: {
                     if (bgRoot.screen.width > width) {
-                        // Center the picture
                         return (bgRoot.screen.width - width) / 2;
                     }
                     return - bgRoot.parallaxTotalPixelsX * usedFractionX;
                 }
                 y: {
                     if (bgRoot.screen.height > height) {
-                        // Center the picture
                         return (bgRoot.screen.height - height) / 2;
                     }
                     return - bgRoot.parallaxTotalPixelsY * usedFractionY;
                 }
 
-                source: bgRoot.wallpaperSafetyTriggered ? "" : bgRoot.wallpaperPath
-                fillMode: Image.PreserveAspectCrop
                 Behavior on x {
                     NumberAnimation {
                         duration: 600
@@ -197,6 +190,7 @@ Variants {
                 width: bgRoot.scaledWallpaperWidth
                 height: bgRoot.scaledWallpaperHeight
             }
+
 
             Loader {
                 id: blurLoader
