@@ -17,7 +17,7 @@ import Quickshell.Hyprland
 import qs.modules.ii.background.widgets
 import qs.modules.ii.background.widgets.clock
 import qs.modules.ii.background.widgets.weather
-import "earth" as EarthApp
+import qs.modules.ii.background.widgets.weather
 
 Variants {
     id: root
@@ -129,7 +129,7 @@ Variants {
             anchors.fill: parent
 
             // Dynamic Earth Wallpaper
-            EarthApp.EarthWrapper {
+            EarthWrapper {
                 id: wallpaper
                 width: bgRoot.screen.width + bgRoot.parallaxTotalPixelsX
                 height: bgRoot.screen.height + bgRoot.parallaxTotalPixelsY
