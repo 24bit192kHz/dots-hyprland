@@ -155,6 +155,7 @@ Item {
     Earth {
         anchors.fill: parent
         solarState: state
+        modelData: bgRoot.modelData
         monitorLayout: wrapper.monitorLayout
         sceneCenterX: wrapper.primaryCenterX
         sceneCenterY: wrapper.primaryCenterY

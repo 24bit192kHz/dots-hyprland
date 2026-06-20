@@ -131,6 +131,8 @@ Variants {
             // Dynamic Earth Wallpaper
             EarthApp.EarthWrapper {
                 id: wallpaper
+                width: bgRoot.screen.width + bgRoot.parallaxTotalPixelsX
+                height: bgRoot.screen.height + bgRoot.parallaxTotalPixelsY
                 visible: opacity > 0 && !blurLoader.active
                 opacity: (!bgRoot.wallpaperIsVideo) ? 1 : 0
 
@@ -187,8 +189,6 @@ Variants {
                         easing.type: Easing.OutCubic
                     }
                 }
-                width: bgRoot.scaledWallpaperWidth
-                height: bgRoot.scaledWallpaperHeight
             }
 
 

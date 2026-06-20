@@ -138,5 +138,7 @@ git remote get-url origin|grep -q $remote_repo || { echo "Dir \"$local_path\" is
 x git pull origin main && git submodule update --init --recursive
 x git branch --set-upstream-to=origin/main main
 echo "$me: Downloaded."
+echo "$me: Downloading 8k Earth assets..."
+(cd dots/.config/quickshell/ii/modules/ii/background/earth && python3 download_assets.py)
 echo "$me: Running \"./setup install\"."
 x ./setup install "$@" || { echo "$me: Error occured when running \"./setup install\"."; exit 1 ; }

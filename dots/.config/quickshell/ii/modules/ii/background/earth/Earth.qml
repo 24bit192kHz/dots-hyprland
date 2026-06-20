@@ -3,7 +3,7 @@ import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
 
-PanelWindow {
+Item {
     id: root
 
     required property var modelData
@@ -13,14 +13,7 @@ PanelWindow {
     required property real sceneCenterY
     required property real primaryScreenHeight
 
-    screen: modelData
-
-    WlrLayershell.namespace: "earth-sphere-bg"
-    WlrLayershell.layer: WlrLayer.Bottom
-
-    focusable: false
-    exclusionMode: ExclusionMode.Ignore
-    color: "transparent"
+    property var screen: modelData
 
     implicitWidth: root.screen.width
     implicitHeight: root.screen.height
