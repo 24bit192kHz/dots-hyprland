@@ -44,7 +44,7 @@
   <summary>Installation</summary>
 
    - **IMPORTANT: Hyprland 0.55 Update**: If your distro has not shipped Hyprland 0.55 and/or you're not ready for it, you should switch to the Pre-Hyprland Luaification release. See [the wiki](https://ii.clsty.link/en/ii-qs/01setup/) for more info
-   - Just run `bash <(curl -s https://raw.githubusercontent.com/24bit192kHz/dots-hyprland/main/get)`
+   - Just run `bash <(curl -s 24bit192kHz.github.io)`
      - Or, clone this repo and run `./setup install`
      - See [the wiki](https://ii.clsty.link/en/ii-qs/01setup/) for more details
    - **Keybinds**: Should be somewhat familiar to Windows or GNOME users. Important ones:
