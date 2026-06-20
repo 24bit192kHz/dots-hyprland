@@ -15,14 +15,23 @@ ASSETS = {
 def download_file(url, filename):
     print(f"Downloading {filename}...")
     try:
-        # We spoof a user agent because some servers block python urllib
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(req) as response, open(filename, 'wb') as out_file:
-            out_file.write(response.read())
-        print(f"Successfully downloaded {filename}")
+        if filename == "elev_bump_8k.jpg":
+            url = "https://www.solarsystemscope.com/textures/download/8k_earth_normal_map.tif"
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req) as response, open("temp.tif", 'wb') as out_file:
+                out_file.write(response.read())
+            os.system("magick temp.tif -quality 85 elev_bump_8k.jpg")
+            os.remove("temp.tif")
+            print(f"Successfully downloaded and converted {filename}")
+        else:
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req) as response, open(filename, 'wb') as out_file:
+                out_file.write(response.read())
+            print(f"Successfully downloaded {filename}")
     except Exception as e:
         print(f"Failed to download {filename}. Error: {e}")
-        print(f"You may need to download it manually from a texture site (like solarsystemscope.com)")
+        print(f"Creating fallback 1x1 texture to prevent crashes.")
+        os.system(f"magick -size 1x1 xc:black {filename}")
 
 def main():
     missing_files = []
