@@ -2,7 +2,6 @@
 *.jpg
 *.png
 *.dds
-*.qsb
 tiles/
 
 # Python caches
