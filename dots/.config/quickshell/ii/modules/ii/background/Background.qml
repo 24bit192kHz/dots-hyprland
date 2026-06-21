@@ -79,6 +79,9 @@ Variants {
             savedRotations[previousPlanetIndex] = targetUserOffsetAngle
             savedTilts[previousPlanetIndex] = targetUserTiltOffset
 
+            // Update planet color immediately
+            root.updateActivePlanetColor()
+
             Qt.callLater(function() {
                 targetUserOffsetAngle = savedRotations[activePlanetIndex]
                 userOffsetAngle = targetUserOffsetAngle
@@ -131,6 +134,21 @@ Variants {
         "neptune": "textures/2k_neptune.jpg"
     })
 
+    // Imperatively managed — QML can't track JS object key mutations,
+    // so we store the *active* planet's color as a dedicated property.
+    property color activePlanetColor: Appearance.colors.colPrimary
+    property var _planetColorCache: ({})
+
+    function updateActivePlanetColor() {
+        let name = solarState.activePlanet
+        let cached = _planetColorCache[name]
+        if (cached !== undefined) {
+            activePlanetColor = Qt.color(cached)
+        } else {
+            activePlanetColor = Appearance.colors.colPrimary
+        }
+    }
+
     function extractPlanetColor(planetName) {
         let texFile = planetTextures[planetName]
         if (!texFile) return
@@ -153,17 +171,14 @@ Variants {
             onStreamFinished: {
                 let hex = planetColorOutput.text.trim()
                 if (hex && hex.startsWith("#")) {
-                    root.planetColors[planetColorProc.planetName] = hex
+                    root._planetColorCache[planetColorProc.planetName] = hex
+                    // If this is the currently visible planet, update immediately
+                    if (planetColorProc.planetName === solarState.activePlanet) {
+                        root.activePlanetColor = Qt.color(hex)
+                    }
                 }
             }
         }
-    }
-
-    property var planetColors: ({})
-
-    function getPlanetColor(planetName) {
-        if (planetColors[planetName] !== undefined) return planetColors[planetName]
-        return Appearance.colors.colPrimary
     }
 
     Component.onCompleted: {
@@ -278,7 +293,7 @@ Variants {
         readonly property bool verticalParallax: (Config.options.background.parallax.autoVertical && wallpaperHeight > wallpaperWidth) || Config.options.background.parallax.vertical
         // Colors
         property bool shouldBlur: (GlobalStates.screenLocked && Config.options.lock.blur.enable)
-        property color dominantColor: root.getPlanetColor(solarState.activePlanet)
+        property color dominantColor: root.activePlanetColor
         property bool dominantColorIsDark: dominantColor.hslLightness < 0.5
         property color colText: {
             if (wallpaperSafetyTriggered)
