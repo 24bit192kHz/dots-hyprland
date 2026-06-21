@@ -164,7 +164,7 @@ Singleton {
             property JsonObject background: JsonObject {
                 property JsonObject widgets: JsonObject {
                     property JsonObject clock: JsonObject {
-                        property bool enable: true
+                        property bool enable: false
                         property bool showOnlyWhenLocked: false
                         property string placementStrategy: "leastBusy" // "free", "leastBusy", "mostBusy"
                         property real x: 100
