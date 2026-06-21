@@ -149,16 +149,6 @@ Variants {
         }
     }
 
-    function extractPlanetColor(planetName) {
-        let texFile = planetTextures[planetName]
-        if (!texFile) return
-        let fullPath = Qt.resolvedUrl("earth/" + texFile).toString().replace("file://", "")
-        planetColorProc.texturePath = fullPath
-        planetColorProc.planetName = planetName
-        planetColorProc.running = false
-        planetColorProc.running = true
-    }
-
     Process {
         id: planetColorProc
         property string texturePath: ""
@@ -179,6 +169,16 @@ Variants {
                 }
             }
         }
+    }
+
+    function extractPlanetColor(planetName) {
+        let texFile = planetTextures[planetName]
+        if (!texFile) return
+        let fullPath = Qt.resolvedUrl("earth/" + texFile).toString().replace("file://", "")
+        planetColorProc.texturePath = fullPath
+        planetColorProc.planetName = planetName
+        planetColorProc.running = false
+        planetColorProc.running = true
     }
 
     Component.onCompleted: {
