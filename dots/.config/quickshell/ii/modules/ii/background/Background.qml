@@ -122,24 +122,34 @@ Variants {
     }
 
     // ── Planet Dominant Colors ───────────────────────────
-    // Imperatively managed — QML can't track JS object key mutations,
-    // so we store the *active* planet's color as a dedicated property.
+    // Pre-extracted from each planet's texture via K-means clustering.
+    // Static assets → colors never change → hardcode for instant startup.
     property color activePlanetColor: Appearance.colors.colPrimary
 
+    readonly property var _planetColorMap: ({
+        "earth": "#1e3b75",
+        "moon": "#555453",
+        "mercury": "#818181",
+        "venus_surface": "#cd7427",
+        "mars": "#ca6444",
+        "jupiter": "#b29980",
+        "saturn": "#fde8c7",
+        "uranus": "#a6d7de",
+        "neptune": "#4885da"
+    })
+
     function updateActivePlanetColor() {
-        let name = solarState.activePlanet
-        let cached = _planetColorCache[name]
-        if (cached !== undefined) {
-            activePlanetColor = Qt.color(cached)
+        let hex = _planetColorMap[solarState.activePlanet]
+        if (hex !== undefined) {
+            activePlanetColor = Qt.color(hex)
         } else {
             activePlanetColor = Appearance.colors.colPrimary
         }
     }
 
-    property var _planetColorCache: ({})
-
     Component.onCompleted: {
         forceAstroUpdate()
+        updateActivePlanetColor()
     }
 
     // ── Astronomy Engine ─────────────────────────────────
@@ -422,58 +432,6 @@ Variants {
                     let trimmed = data.trim()
                     if (trimmed === "1") solarState.ctrlHeld = true
                     else if (trimmed === "0") solarState.ctrlHeld = false
-                }
-            }
-        }
-
-        // ── Planet Color Extraction (first screen only) ──────────────
-        property var planetTextures: ({
-            "earth": "textures/earth_8k_opt.jpg",
-            "moon": "textures/moon_2k.jpg",
-            "mercury": "textures/2k_mercury.jpg",
-            "venus_surface": "textures/2k_venus_surface.jpg",
-            "mars": "textures/2k_mars.jpg",
-            "jupiter": "textures/2k_jupiter.jpg",
-            "saturn": "textures/2k_saturn.jpg",
-            "uranus": "textures/2k_uranus.jpg",
-            "neptune": "textures/2k_neptune.jpg"
-        })
-
-        function extractPlanetColor(planetName) {
-            let texFile = bgRoot.planetTextures[planetName]
-            if (!texFile) return
-            let fullPath = Qt.resolvedUrl("earth/" + texFile).toString().replace("file://", "")
-            planetColorProc.texturePath = fullPath
-            planetColorProc.planetName = planetName
-            planetColorProc.running = false
-            planetColorProc.running = true
-        }
-
-        Process {
-            id: planetColorProc
-            property string texturePath: ""
-            property string planetName: ""
-            command: ["python3", Qt.resolvedUrl("scripts/images/extract_dominant_color.py").toString().replace("file://", ""), texturePath]
-            running: false
-
-            stdout: StdioCollector {
-                id: planetColorOutput
-                onStreamFinished: {
-                    let hex = planetColorOutput.text.trim()
-                    if (hex && hex.startsWith("#")) {
-                        root._planetColorCache[planetColorProc.planetName] = hex
-                        if (planetColorProc.planetName === solarState.activePlanet) {
-                            root.activePlanetColor = Qt.color(hex)
-                        }
-                    }
-                }
-            }
-        }
-
-        Component.onCompleted: {
-            if (isFirstScreen) {
-                for (let i = 0; i < solarState.planets.length; i++) {
-                    extractPlanetColor(solarState.planets[i])
                 }
             }
         }
