@@ -118,6 +118,61 @@ Variants {
         }
     }
 
+    // ── Planet Dominant Colors (extracted per texture) ───
+    property var planetTextures: ({
+        "earth": "textures/earth_8k_opt.jpg",
+        "moon": "textures/moon_2k.jpg",
+        "mercury": "textures/2k_mercury.jpg",
+        "venus_surface": "textures/2k_venus_surface.jpg",
+        "mars": "textures/2k_mars.jpg",
+        "jupiter": "textures/2k_jupiter.jpg",
+        "saturn": "textures/2k_saturn.jpg",
+        "uranus": "textures/2k_uranus.jpg",
+        "neptune": "textures/2k_neptune.jpg"
+    })
+
+    function extractPlanetColor(planetName) {
+        let texFile = planetTextures[planetName]
+        if (!texFile) return
+        let fullPath = Qt.resolvedUrl("earth/" + texFile).toString().replace("file://", "")
+        planetColorProc.texturePath = fullPath
+        planetColorProc.planetName = planetName
+        planetColorProc.running = false
+        planetColorProc.running = true
+    }
+
+    Process {
+        id: planetColorProc
+        property string texturePath: ""
+        property string planetName: ""
+        command: ["python3", Qt.resolvedUrl("scripts/images/extract_dominant_color.py").toString().replace("file://", ""), texturePath]
+        running: false
+
+        stdout: StdioCollector {
+            id: planetColorOutput
+            onStreamFinished: {
+                let hex = planetColorOutput.text.trim()
+                if (hex && hex.startsWith("#")) {
+                    root.planetColors[planetColorProc.planetName] = hex
+                }
+            }
+        }
+    }
+
+    property var planetColors: ({})
+
+    function getPlanetColor(planetName) {
+        if (planetColors[planetName] !== undefined) return planetColors[planetName]
+        return Appearance.colors.colPrimary
+    }
+
+    Component.onCompleted: {
+        forceAstroUpdate()
+        for (let i = 0; i < solarState.planets.length; i++) {
+            extractPlanetColor(solarState.planets[i])
+        }
+    }
+
     // ── Astronomy Engine ─────────────────────────────────
     property real lastAstroCalc: 0
 
@@ -133,10 +188,6 @@ Variants {
         solarState.gmst = astro.gmst_rad
         solarState.eps = astro.eps_rad
         solarState.utcDaysMod = (ms / 86400000.0) % 1.0
-    }
-
-    Component.onCompleted: {
-        forceAstroUpdate()
     }
 
     // ── Real-Time Astronomy Timer ────────────────────────
@@ -227,12 +278,15 @@ Variants {
         readonly property bool verticalParallax: (Config.options.background.parallax.autoVertical && wallpaperHeight > wallpaperWidth) || Config.options.background.parallax.vertical
         // Colors
         property bool shouldBlur: (GlobalStates.screenLocked && Config.options.lock.blur.enable)
-        property color dominantColor: Appearance.colors.colPrimary // Default, to be changed
+        property color dominantColor: root.getPlanetColor(solarState.activePlanet)
         property bool dominantColorIsDark: dominantColor.hslLightness < 0.5
         property color colText: {
             if (wallpaperSafetyTriggered)
                 return CF.ColorUtils.mix(Appearance.colors.colOnLayer0, Appearance.colors.colPrimary, 0.75);
-            return (GlobalStates.screenLocked && shouldBlur) ? Appearance.colors.colOnLayer0 : CF.ColorUtils.colorWithLightness(Appearance.colors.colPrimary, (dominantColorIsDark ? 0.8 : 0.12));
+            return (GlobalStates.screenLocked && shouldBlur) ? Appearance.colors.colOnLayer0 : CF.ColorUtils.colorWithLightness(dominantColor, (dominantColorIsDark ? 0.8 : 0.12));
+        }
+        Behavior on dominantColor {
+            ColorAnimation { duration: 600; easing.type: Easing.InOutQuad }
         }
         Behavior on colText {
             animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
