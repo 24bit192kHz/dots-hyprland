@@ -2,8 +2,8 @@ import QtQuick
 import QtQuick.Effects
 import Quickshell
 import Quickshell.Io
-import "../../background/earth/core/astronomy.js" as Astro
-import "../../background/earth/core"
+import "earth/core/astronomy.js" as Astro
+import "earth/core"
 
 // ── Embedded Earth Wallpaper ──────────────────────────────────
 // Item-based wrapper for embedding inside Background.qml's PanelWindow.
@@ -162,7 +162,7 @@ Item {
     // ── Local SQLite Tile Server ─────────────────────────────
     Process {
         id: tileServerProc
-        command: ["python3", Qt.resolvedUrl("../../background/earth/server.py").toString().replace("file://", "")]
+        command: ["python3", Qt.resolvedUrl("earth/server.py").toString().replace("file://", "")]
         running: true
 
         stdout: SplitParser {
@@ -204,7 +204,7 @@ Item {
     // ── Key Monitor (Ctrl) ───────────────────────────────────
     Process {
         id: ctrlProc
-        command: ["python3", Qt.resolvedUrl("../../background/earth/scripts/ctrl_monitor.py").toString().replace("file://", "")]
+        command: ["python3", Qt.resolvedUrl("earth/scripts/ctrl_monitor.py").toString().replace("file://", "")]
         running: true
 
         stdout: SplitParser {
@@ -461,10 +461,6 @@ Item {
         function onBaseSizeChanged() { root.updateAstroMath() }
     }
 
-    Component.onCompleted: {
-        updateAstroMath()
-    }
-
     // ── Global Background (Milky Way) ────────────────────────
     ShaderEffect {
         id: bgSphere
@@ -477,8 +473,8 @@ Item {
 
         property var bgTex: milkyWayImg
 
-        vertexShader: "../../background/earth/assets/shaders/stars.vert.qsb"
-        fragmentShader: "../../background/earth/assets/shaders/stars.frag.qsb"
+        vertexShader: "earth/assets/shaders/stars.vert.qsb"
+        fragmentShader: "earth/assets/shaders/stars.frag.qsb"
     }
 
     // ── Interaction ──────────────────────────────────────────
@@ -596,22 +592,22 @@ Item {
     }
 
     // ── Textures ─────────────────────────────────────────────
-    Image { id: milkyWayImg; asynchronous: true; source: Qt.resolvedUrl("../../background/earth/assets/textures/8k_stars_milky_way.jpg"); sourceSize: Qt.size(4096, 2048); mipmap: true; visible: false }
+    Image { id: milkyWayImg; asynchronous: true; source: Qt.resolvedUrl("earth/assets/textures/8k_stars_milky_way.jpg"); sourceSize: Qt.size(4096, 2048); mipmap: true; visible: false }
 
-    Image { id: earthImg; asynchronous: true; source: solarState.activePlanet === "earth" ? Qt.resolvedUrl("../../background/earth/assets/textures/earth_8k_opt.jpg") : (solarState.activePlanet === "moon" ? Qt.resolvedUrl("../../background/earth/assets/textures/8k_moon.jpg") : Qt.resolvedUrl("../../background/earth/assets/textures/2k_" + solarState.activePlanet + ".jpg")); sourceSize: Qt.size(4096, 2048); mipmap: true; visible: false }
-    Image { id: satelliteEarthImg; asynchronous: true; source: solarState.activePlanet === "moon" ? Qt.resolvedUrl("../../background/earth/assets/textures/earth_8k_opt.jpg") : ""; sourceSize: Qt.size(2048, 2048); mipmap: true; visible: false }
+    Image { id: earthImg; asynchronous: true; source: solarState.activePlanet === "earth" ? Qt.resolvedUrl("earth/assets/textures/earth_8k_opt.jpg") : (solarState.activePlanet === "moon" ? Qt.resolvedUrl("earth/assets/textures/8k_moon.jpg") : Qt.resolvedUrl("earth/assets/textures/2k_" + solarState.activePlanet + ".jpg")); sourceSize: Qt.size(4096, 2048); mipmap: true; visible: false }
+    Image { id: satelliteEarthImg; asynchronous: true; source: solarState.activePlanet === "moon" ? Qt.resolvedUrl("earth/assets/textures/earth_8k_opt.jpg") : ""; sourceSize: Qt.size(2048, 2048); mipmap: true; visible: false }
 
-    Image { id: nightTexSrc; asynchronous: true; source: Qt.resolvedUrl("../../background/earth/assets/textures/night_8k.jpg"); sourceSize: Qt.size(4096, 2048); mipmap: true; visible: false }
+    Image { id: nightTexSrc; asynchronous: true; source: Qt.resolvedUrl("earth/assets/textures/night_8k.jpg"); sourceSize: Qt.size(4096, 2048); mipmap: true; visible: false }
 
-    Image { id: bumpTexSrc; asynchronous: true; source: Qt.resolvedUrl("../../background/earth/assets/textures/elev_bump_8k.jpg"); sourceSize: Qt.size(4096, 2048); mipmap: true; visible: false }
+    Image { id: bumpTexSrc; asynchronous: true; source: Qt.resolvedUrl("earth/assets/textures/elev_bump_8k.jpg"); sourceSize: Qt.size(4096, 2048); mipmap: true; visible: false }
 
-    Image { id: waterTexSrc; asynchronous: true; source: Qt.resolvedUrl("../../background/earth/assets/textures/water_8k.png"); sourceSize: Qt.size(4096, 2048); mipmap: true; visible: false }
+    Image { id: waterTexSrc; asynchronous: true; source: Qt.resolvedUrl("earth/assets/textures/water_8k.png"); sourceSize: Qt.size(4096, 2048); mipmap: true; visible: false }
 
-    Image { id: cloudTexSrc; asynchronous: true; source: Qt.resolvedUrl("../../background/earth/assets/textures/8k_earth_clouds.jpg"); sourceSize: Qt.size(4096, 2048); mipmap: true; visible: false }
+    Image { id: cloudTexSrc; asynchronous: true; source: Qt.resolvedUrl("earth/assets/textures/8k_earth_clouds.jpg"); sourceSize: Qt.size(4096, 2048); mipmap: true; visible: false }
 
-    Image { id: moonImg; asynchronous: true; source: Qt.resolvedUrl("../../background/earth/assets/textures/moon_2k.jpg"); sourceSize: Qt.size(4096, 2048); mipmap: true; visible: false }
+    Image { id: moonImg; asynchronous: true; source: Qt.resolvedUrl("earth/assets/textures/moon_2k.jpg"); sourceSize: Qt.size(4096, 2048); mipmap: true; visible: false }
 
-    Image { id: saturnRingTexSrc; asynchronous: true; source: Qt.resolvedUrl("../../background/earth/assets/textures/8k_saturn_ring_alpha.png"); sourceSize: Qt.size(4096, 2048); mipmap: true; visible: false }
+    Image { id: saturnRingTexSrc; asynchronous: true; source: Qt.resolvedUrl("earth/assets/textures/8k_saturn_ring_alpha.png"); sourceSize: Qt.size(4096, 2048); mipmap: true; visible: false }
 
     // ── Native Virtual Texturing ─────────────────────────────
     property real patchMinU: 0.0
@@ -721,8 +717,8 @@ Item {
         }
         visible: opacity > 0
 
-        vertexShader: "../../background/earth/assets/shaders/sun.vert.qsb"
-        fragmentShader: "../../background/earth/assets/shaders/sun.frag.qsb"
+        vertexShader: "earth/assets/shaders/sun.vert.qsb"
+        fragmentShader: "earth/assets/shaders/sun.frag.qsb"
     }
 
     // ── Planet Label ─────────────────────────────────────────
@@ -804,8 +800,8 @@ Item {
         property real patchReady: 1.0
         property real cloudOpacity: solarState.activePlanet === "earth" ? Math.min(1.0, Math.max(0.0, 1.0 - (root.zoomScale - 15.0) / 10.0)) : 0.0
 
-        vertexShader: "../../background/earth/assets/shaders/earth.vert.qsb"
-        fragmentShader: "../../background/earth/assets/shaders/earth.frag.qsb"
+        vertexShader: "earth/assets/shaders/earth.vert.qsb"
+        fragmentShader: "earth/assets/shaders/earth.frag.qsb"
     }
 
     // ── Saturn Rings ─────────────────────────────────────────
@@ -835,8 +831,8 @@ Item {
 
         property var ringTex: saturnRingTexSrc
 
-        vertexShader: "../../background/earth/assets/shaders/earth.vert.qsb"
-        fragmentShader: "../../background/earth/assets/shaders/saturn_ring.frag.qsb"
+        vertexShader: "earth/assets/shaders/earth.vert.qsb"
+        fragmentShader: "earth/assets/shaders/saturn_ring.frag.qsb"
     }
 
     // ── Satellite (Moon or Earth) ────────────────────────────
@@ -872,8 +868,8 @@ Item {
         property var nightTex: nightTexSrc
         property real time: solarState.timeSec
 
-        vertexShader: "../../background/earth/assets/shaders/moon.vert.qsb"
-        fragmentShader: solarState.activePlanet === "moon" ? "../../background/earth/assets/shaders/satellite_earth.frag.qsb" : "../../background/earth/assets/shaders/moon.frag.qsb"
+        vertexShader: "earth/assets/shaders/moon.vert.qsb"
+        fragmentShader: solarState.activePlanet === "moon" ? "earth/assets/shaders/satellite_earth.frag.qsb" : "earth/assets/shaders/moon.frag.qsb"
     }
 
     // ── Keyboard Shortcuts ───────────────────────────────────
