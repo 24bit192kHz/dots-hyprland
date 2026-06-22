@@ -294,6 +294,16 @@ switch() {
         fi
     fi
 
+    # Cache: skip Python/Matugen if same color already generated
+    _cache_key="${color:-$imgpath}"
+    _cache_hash=$(echo -n "${type_flag}${_cache_key}" | md5sum | cut -d' ' -f1)
+    _cache_file="$STATE_DIR/user/generated/.color_cache_hash"
+
+    if [ -f "$_cache_file" ] && [ "$(cat "$_cache_file" 2>/dev/null)" == "$_cache_hash" ]; then
+        "$SCRIPT_DIR"/applycolor.sh
+        return
+    fi
+
     # Set harmony and related properties
     if [ -f "$SHELL_CONFIG_FILE" ]; then
         harmony=$(jq -r '.appearance.wallpaperTheming.terminalGenerationProps.harmony' "$SHELL_CONFIG_FILE")
@@ -310,6 +320,8 @@ switch() {
         > "$STATE_DIR"/user/generated/material_colors.scss
     deactivate
     "$SCRIPT_DIR"/applycolor.sh
+
+    echo -n "$_cache_hash" > "$_cache_file"
 
     # Pass screen width, height, and wallpaper path to post_process
     max_width_desired="$(hyprctl monitors -j | jq '([.[].width] | min)' | xargs)"

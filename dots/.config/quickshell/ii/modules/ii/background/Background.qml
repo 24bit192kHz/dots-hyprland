@@ -310,19 +310,19 @@ Variants {
 
         // Wallpaper zoom scale
         function updateZoomScale() {
-            getWallpaperSizeProc.path = bgRoot.wallpaperPath;
-            getWallpaperSizeProc.running = true;
+            // Handled reactively by Image sourceSize binding
         }
-        Process {
-            id: getWallpaperSizeProc
-            property string path: bgRoot.wallpaperPath
-            command: ["magick", "identify", "-format", "%w %h", path]
-            stdout: StdioCollector {
-                id: wallpaperSizeOutputCollector
-                onStreamFinished: {
-                    const output = wallpaperSizeOutputCollector.text;
-                    const [width, height] = output.split(" ").map(Number);
-                    const [screenWidth, screenHeight] = [bgRoot.screen.width, bgRoot.screen.height];
+        Image {
+            id: wallpaperSizeImage
+            visible: false
+            asynchronous: true
+            source: bgRoot.wallpaperPath ? (bgRoot.wallpaperPath.startsWith("file://") ? bgRoot.wallpaperPath : "file://" + bgRoot.wallpaperPath) : ""
+            onSourceSizeChanged: {
+                if (sourceSize.width > 0 && sourceSize.height > 0) {
+                    const width = sourceSize.width;
+                    const height = sourceSize.height;
+                    const screenWidth = bgRoot.screen.width;
+                    const screenHeight = bgRoot.screen.height;
                     bgRoot.wallpaperWidth = width;
                     bgRoot.wallpaperHeight = height;
 

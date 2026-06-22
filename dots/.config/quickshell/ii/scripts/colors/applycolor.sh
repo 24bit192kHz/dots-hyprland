@@ -27,6 +27,12 @@ IFS=$'\n'
 colorlist=($colornames)     # Array of color names
 colorvalues=($colorstrings) # Array of color values
 
+# Build batch sed expression for all color replacements
+_sed_expr=""
+for i in "${!colorlist[@]}"; do
+  _sed_expr+="s|${colorlist[$i]} #|${colorvalues[$i]#\#}|g;"
+done
+
 apply_kitty() {  
   # Check if terminal escape sequence template exists
   if [ ! -f "$SCRIPT_DIR/terminal/kitty-theme.conf" ]; then
@@ -36,10 +42,8 @@ apply_kitty() {
   # Copy template
   mkdir -p "$STATE_DIR"/user/generated/terminal
   cp "$SCRIPT_DIR/terminal/kitty-theme.conf" "$STATE_DIR"/user/generated/terminal/kitty-theme.conf
-  # Apply colors
-  for i in "${!colorlist[@]}"; do
-    sed -i "s/${colorlist[$i]} #/${colorvalues[$i]#\#}/g" "$STATE_DIR"/user/generated/terminal/kitty-theme.conf
-  done
+  # Apply all colors in a single sed invocation
+  sed -i "$_sed_expr" "$STATE_DIR"/user/generated/terminal/kitty-theme.conf
 
   # Reload
   if ! pgrep -f kitty >/dev/null; then
@@ -59,12 +63,8 @@ apply_anyterm() {
   # Copy template
   mkdir -p "$STATE_DIR"/user/generated/terminal
   cp "$SCRIPT_DIR/terminal/sequences.txt" "$STATE_DIR"/user/generated/terminal/sequences.txt
-  # Apply colors
-  for i in "${!colorlist[@]}"; do
-    sed -i "s/${colorlist[$i]} #/${colorvalues[$i]#\#}/g" "$STATE_DIR"/user/generated/terminal/sequences.txt
-  done
-
-  sed -i "s/\$alpha/$term_alpha/g" "$STATE_DIR/user/generated/terminal/sequences.txt"
+  # Apply all colors + alpha in a single sed invocation
+  sed -i "${_sed_expr}s|\\\$alpha|${term_alpha}|g" "$STATE_DIR"/user/generated/terminal/sequences.txt
 
   for file in /dev/pts/*; do
     if [[ $file =~ ^/dev/pts/[0-9]+$ ]]; then
