@@ -138,6 +138,8 @@ Variants {
         "neptune": "#4885da"
     })
 
+    signal requestThemeUpdate()
+
     function updateActivePlanetColor() {
         let hex = _planetColorMap[solarState.activePlanet]
         if (hex !== undefined) {
@@ -147,30 +149,12 @@ Variants {
         }
         
         if (root._themeInitDone) {
-            themeDebounceTimer.restart()
+            root.requestThemeUpdate()
         }
     }
 
     // ── System Theme Integration ───────────────────────
     property bool _themeInitDone: false
-
-    Timer {
-        id: themeDebounceTimer
-        interval: 1000 // Debounce rapid switching
-        repeat: false
-        onTriggered: {
-            themeProc.hexColor = root.activePlanetColor.toString()
-            themeProc.running = false
-            themeProc.running = true
-        }
-    }
-
-    Process {
-        id: themeProc
-        property string hexColor: ""
-        command: ["bash", Qt.resolvedUrl("../../../scripts/colors/switchwall.sh").toString().replace("file://", ""), "--color", hexColor, "--noswitch"]
-        running: false
-    }
 
     Component.onCompleted: {
         forceAstroUpdate()
@@ -469,6 +453,33 @@ Variants {
                     else if (trimmed === "0") solarState.ctrlHeld = false
                 }
             }
+        }
+
+        // ── System Theme Integration (first screen only) ───────────
+        Connections {
+            target: root
+            function onRequestThemeUpdate() {
+                if (!bgRoot.isFirstScreen) return;
+                themeDebounceTimer.restart();
+            }
+        }
+
+        Timer {
+            id: themeDebounceTimer
+            interval: 1000 // Debounce rapid switching
+            repeat: false
+            onTriggered: {
+                themeProc.hexColor = root.activePlanetColor.toString();
+                themeProc.running = false;
+                themeProc.running = true;
+            }
+        }
+
+        Process {
+            id: themeProc
+            property string hexColor: ""
+            command: ["bash", Qt.resolvedUrl("../../../scripts/colors/switchwall.sh").toString().replace("file://", ""), "--color", hexColor, "--noswitch"]
+            running: false
         }
 
         // ── Keyboard Shortcuts (PanelWindow level for focus) ───────────
