@@ -145,6 +145,10 @@ Variants {
         } else {
             activePlanetColor = Appearance.colors.colPrimary
         }
+        
+        if (root._themeInitDone) {
+            themeDebounceTimer.restart()
+        }
     }
 
     // ── System Theme Integration ───────────────────────
@@ -166,15 +170,6 @@ Variants {
         property string hexColor: ""
         command: ["bash", Qt.resolvedUrl("../../../scripts/colors/switchwall.sh").toString().replace("file://", ""), "--color", hexColor, "--noswitch"]
         running: false
-    }
-
-    Connections {
-        target: solarState
-        function onActivePlanetChanged() {
-            if (root._themeInitDone) {
-                themeDebounceTimer.restart()
-            }
-        }
     }
 
     Component.onCompleted: {
