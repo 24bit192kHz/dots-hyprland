@@ -147,9 +147,40 @@ Variants {
         }
     }
 
+    // ── System Theme Integration ───────────────────────
+    property bool _themeInitDone: false
+
+    Timer {
+        id: themeDebounceTimer
+        interval: 1000 // Debounce rapid switching
+        repeat: false
+        onTriggered: {
+            themeProc.hexColor = root.activePlanetColor.toString()
+            themeProc.running = false
+            themeProc.running = true
+        }
+    }
+
+    Process {
+        id: themeProc
+        property string hexColor: ""
+        command: ["bash", Qt.resolvedUrl("../../../scripts/colors/switchwall.sh").toString().replace("file://", ""), "--color", hexColor, "--noswitch"]
+        running: false
+    }
+
+    Connections {
+        target: solarState
+        function onActivePlanetChanged() {
+            if (root._themeInitDone) {
+                themeDebounceTimer.restart()
+            }
+        }
+    }
+
     Component.onCompleted: {
         forceAstroUpdate()
         updateActivePlanetColor()
+        Qt.callLater(() => { root._themeInitDone = true })
     }
 
     // ── Astronomy Engine ─────────────────────────────────
