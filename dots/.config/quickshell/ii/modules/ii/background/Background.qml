@@ -343,7 +343,7 @@ Variants {
                     let monitors = JSON.parse(hyprProc.buf)
                     let layout = {}
                     let primaryName = ""
-                    let maxArea = 0
+                    let maxScore = 0
 
                     for (let i = 0; i < monitors.length; i++) {
                         let m = monitors[i]
@@ -361,10 +361,12 @@ Variants {
                             physicalHeight: m.height
                         }
                         
-                        // Always pick the largest monitor (by pixel area) as primary
-                        let area = m.width * m.height
-                        if (area > maxArea) {
-                            maxArea = area
+                        // Heuristic: Pixel throughput (Area × Refresh Rate)
+                        // This perfectly balances resolution and speed.
+                        // e.g. 1440p@240Hz > 4K@60Hz.
+                        let score = m.width * m.height * (m.refreshRate || 60.0)
+                        if (score > maxScore) {
+                            maxScore = score
                             primaryName = m.name
                         }
                     }
