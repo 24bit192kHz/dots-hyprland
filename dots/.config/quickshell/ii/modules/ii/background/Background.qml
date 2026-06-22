@@ -139,11 +139,6 @@ Variants {
             root.requestThemeUpdate()
         }
     }
-        
-        if (root._themeInitDone) {
-            root.requestThemeUpdate()
-        }
-    }
 
     // ── System Theme Integration ───────────────────────
     property bool _themeInitDone: false
