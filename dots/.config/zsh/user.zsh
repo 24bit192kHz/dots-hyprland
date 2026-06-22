@@ -27,3 +27,5 @@ if [[ ${HYDE_ZSH_NO_PLUGINS} != "1" ]]; then
         "sudo"
     )
 fi
+# Quickshell Virtual Environment
+export ILLOGICAL_IMPULSE_VIRTUAL_ENV="${ILLOGICAL_IMPULSE_VIRTUAL_ENV:-$HOME/.local/state/quickshell/.venv}"
