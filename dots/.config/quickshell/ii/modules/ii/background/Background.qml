@@ -126,27 +126,19 @@ Variants {
     // Static assets → colors never change → hardcode for instant startup.
     property color activePlanetColor: Appearance.colors.colPrimary
 
-    readonly property var _planetColorMap: ({
-        "earth": "#2196F3",
-        "moon": "#555453",
-        "mercury": "#818181",
-        "venus_surface": "#cd7427",
-        "mars": "#ca6444",
-        "jupiter": "#b29980",
-        "saturn": "#fde8c7",
-        "uranus": "#a6d7de",
-        "neptune": "#4885da"
-    })
+    
+    function getPlanetImagePath(planetName) {
+        if (planetName === "earth") return Qt.resolvedUrl("earth/assets/textures/earth_8k_opt.jpg").toString().replace("file://", "");
+        if (planetName === "moon") return Qt.resolvedUrl("earth/assets/textures/8k_moon.jpg").toString().replace("file://", "");
+        return Qt.resolvedUrl("earth/assets/textures/2k_" + planetName + ".jpg").toString().replace("file://", "");
+    }
 
     signal requestThemeUpdate()
-
     function updateActivePlanetColor() {
-        let hex = _planetColorMap[solarState.activePlanet]
-        if (hex !== undefined) {
-            activePlanetColor = Qt.color(hex)
-        } else {
-            activePlanetColor = Appearance.colors.colPrimary
+        if (root._themeInitDone) {
+            root.requestThemeUpdate()
         }
+    }
         
         if (root._themeInitDone) {
             root.requestThemeUpdate()
@@ -479,7 +471,7 @@ Variants {
         Process {
             id: themeProc
             property string hexColor: ""
-            command: ["bash", Qt.resolvedUrl("../../../scripts/colors/switchwall.sh").toString().replace("file://", ""), "--color", hexColor, "--type", "scheme-tonal-spot", "--noswitch"]
+            command: ["bash", Qt.resolvedUrl("../../../scripts/colors/switchwall.sh").toString().replace("file://", ""), "--color", "clear", "--noswitch", "--image", root.getPlanetImagePath(solarState.activePlanet)]
             running: false
         }
 
