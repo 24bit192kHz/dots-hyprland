@@ -49,9 +49,13 @@ apply_kitty() {
   if ! pgrep -f kitty >/dev/null; then
     return
   fi
-  for pid in $(pidof kitty); do
-    kill -SIGUSR1 "$pid" 2>/dev/null || true
-  done
+  if command -v killall >/dev/null; then
+    killall -SIGUSR1 kitty 2>/dev/null || true
+  else
+    for pid in $(pidof kitty); do
+      kill -SIGUSR1 "$pid" 2>/dev/null || true
+    done
+  fi
 }
 
 apply_anyterm() {
