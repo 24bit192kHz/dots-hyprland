@@ -183,6 +183,11 @@ Item {
         root.vSunY = root.toLocalY(-_sunY3D * _sScale - _vSSz / 2 + root.baseSize * 0.16 * _sScale);
     }
 
+    
+    Component.onCompleted: {
+        updateAstroMath()
+    }
+
     Connections {
         target: root
         function onUserOffsetAngleChanged() { root.updateAstroMath() }
