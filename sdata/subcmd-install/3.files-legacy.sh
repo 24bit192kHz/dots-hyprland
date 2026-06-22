@@ -77,3 +77,7 @@ case "${SKIP_HYPRLAND}" in
 esac
 
 install_file "dots/.local/share/icons/illogical-impulse.svg" "${XDG_DATA_HOME}"/icons/illogical-impulse.svg
+
+if [ -f "dots/.zshenv" ]; then
+  install_file "dots/.zshenv" "$HOME/.zshenv"
+fi
