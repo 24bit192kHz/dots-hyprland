@@ -127,7 +127,7 @@ Variants {
     property color activePlanetColor: Appearance.colors.colPrimary
 
     readonly property var _planetColorMap: ({
-        "earth": "#1e3b75",
+        "earth": "#2196F3",
         "moon": "#555453",
         "mercury": "#818181",
         "venus_surface": "#cd7427",
