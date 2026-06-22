@@ -478,7 +478,7 @@ Variants {
         Process {
             id: themeProc
             property string hexColor: ""
-            command: ["bash", Qt.resolvedUrl("../../../scripts/colors/switchwall.sh").toString().replace("file://", ""), "--color", hexColor, "--noswitch"]
+            command: ["bash", Qt.resolvedUrl("../../../scripts/colors/switchwall.sh").toString().replace("file://", ""), "--color", hexColor, "--type", "scheme-fidelity", "--noswitch"]
             running: false
         }
 
