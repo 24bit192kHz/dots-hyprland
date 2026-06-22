@@ -343,6 +343,7 @@ Variants {
                     let monitors = JSON.parse(hyprProc.buf)
                     let layout = {}
                     let primaryName = ""
+                    let maxArea = 0
 
                     for (let i = 0; i < monitors.length; i++) {
                         let m = monitors[i]
@@ -359,7 +360,13 @@ Variants {
                             physicalWidth: m.width,
                             physicalHeight: m.height
                         }
-                        if (m.focused) primaryName = m.name
+                        
+                        // Always pick the largest monitor (by pixel area) as primary
+                        let area = m.width * m.height
+                        if (area > maxArea) {
+                            maxArea = area
+                            primaryName = m.name
+                        }
                     }
 
                     if (!primaryName && monitors.length > 0)
