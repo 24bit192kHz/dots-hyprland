@@ -503,8 +503,8 @@ Variants {
             // Dynamic Earth Wallpaper
             EarthWrapper {
                 id: wallpaper
-                width: bgRoot.screen.width + bgRoot.parallaxTotalPixelsX
-                height: bgRoot.screen.height + bgRoot.parallaxTotalPixelsY
+                width: bgRoot.screen.width
+                height: bgRoot.screen.height
                 visible: opacity > 0 && !blurLoader.active
                 opacity: (!bgRoot.wallpaperIsVideo) ? 1 : 0
 
@@ -543,18 +543,8 @@ Variants {
                     return Math.max(0, Math.min(1, usedFraction));
                 }
 
-                x: {
-                    if (bgRoot.screen.width > width) {
-                        return (bgRoot.screen.width - width) / 2;
-                    }
-                    return - bgRoot.parallaxTotalPixelsX * usedFractionX;
-                }
-                y: {
-                    if (bgRoot.screen.height > height) {
-                        return (bgRoot.screen.height - height) / 2;
-                    }
-                    return - bgRoot.parallaxTotalPixelsY * usedFractionY;
-                }
+                x: 0
+                y: 0
 
                 Behavior on x {
                     NumberAnimation {
